@@ -16,26 +16,26 @@ const List = styled.div`
 const ContactCard = styled.div`
   background: ${(props) => props.color};
   color: white;
-  padding: 15px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
   position: relative;
+  min-width: 300px;
 `;
 
-const ContactInfo = styled.div`
+const CardHeader = styled.div`
+  background: ${(props) => props.color};
+  padding: 15px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
 `;
 
 const ButtonContainer = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
-  gap: 5px;
+  gap: 10px;
 `;
 
 const IconButton = styled.button`
@@ -51,29 +51,63 @@ const IconButton = styled.button`
   font-size: 14px;
 `;
 
+const ContactInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+`;
+
+const EditContainer = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+`;
+
 const EditForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  background: white;
-  padding: 10px;
-  border-radius: 5px;
+  gap: 15px;
+  margin-top: 10px;
 `;
 
 const Input = styled.input`
-  padding: 5px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 16px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 `;
 
 const SaveButton = styled.button`
   background: green;
   color: white;
-  padding: 5px;
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 5px;
+  flex: 1;
+  text-align: center;
+`;
+
+const CancelButton = styled.button`
+  background: gray;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
 `;
 
 const ContactList = () => {
@@ -94,41 +128,53 @@ const ContactList = () => {
     setEditingId(null);
   };
 
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
   return (
     <List>
       {contacts.map((contact, index) => (
         <ContactCard key={contact.id} color={colors[index % colors.length]}>
-          <ButtonContainer>
-            <IconButton onClick={() => handleEditClick(contact)}>
-              <FaEdit />
-            </IconButton>
-            <IconButton onClick={() => dispatch(removeContact(contact.id))}>
-              <FaTrash />
-            </IconButton>
-          </ButtonContainer>
+          <CardHeader color={colors[index % colors.length]}>
+            <h3>{contact.name}</h3>
+            <ButtonContainer>
+              <IconButton onClick={() => handleEditClick(contact)}>
+                <FaEdit />
+              </IconButton>
+              <IconButton onClick={() => dispatch(removeContact(contact.id))}>
+                <FaTrash />
+              </IconButton>
+            </ButtonContainer>
+          </CardHeader>
 
           {editingId === contact.id ? (
-            <EditForm onSubmit={handleSaveEdit}>
-              <Input
-                type="text"
-                value={editedContact.name}
-                onChange={(e) => setEditedContact({ ...editedContact, name: e.target.value })}
-              />
-              <Input
-                type="email"
-                value={editedContact.email}
-                onChange={(e) => setEditedContact({ ...editedContact, email: e.target.value })}
-              />
-              <Input
-                type="tel"
-                value={editedContact.phone}
-                onChange={(e) => setEditedContact({ ...editedContact, phone: e.target.value })}
-              />
-              <SaveButton type="submit">Salvar</SaveButton>
-            </EditForm>
+            <EditContainer>
+              <EditForm onSubmit={handleSaveEdit}>
+                <Input
+                  type="text"
+                  value={editedContact.name}
+                  onChange={(e) => setEditedContact({ ...editedContact, name: e.target.value })}
+                />
+                <Input
+                  type="email"
+                  value={editedContact.email}
+                  onChange={(e) => setEditedContact({ ...editedContact, email: e.target.value })}
+                />
+                <Input
+                  type="tel"
+                  value={editedContact.phone}
+                  onChange={(e) => setEditedContact({ ...editedContact, phone: e.target.value })}
+                />
+
+                <ButtonGroup>
+                  <SaveButton type="submit">Salvar</SaveButton>
+                  <CancelButton type="button" onClick={handleCancelEdit}>Cancelar</CancelButton>
+                </ButtonGroup>
+              </EditForm>
+            </EditContainer>
           ) : (
             <>
-              <h3>{contact.name}</h3>
               <ContactInfo>
                 <FaPhone /> {contact.phone}
               </ContactInfo>

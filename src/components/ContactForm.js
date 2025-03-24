@@ -35,6 +35,28 @@ const Button = styled.button`
   }
 `;
 
+const applyPhoneMask = (value) => {
+  // Remove todos os caracteres não numéricos
+  const numbers = value.replace(/\D/g, '');
+  
+  // Aplica a máscara conforme o usuário digita
+  let maskedValue = numbers;
+  if (numbers.length > 0) {
+    maskedValue = `(${numbers.slice(0, 2)}`;
+    if (numbers.length > 2) {
+      maskedValue += `) ${numbers.slice(2, 3)}`;
+      if (numbers.length > 3) {
+        maskedValue += ` ${numbers.slice(3, 7)}`;
+        if (numbers.length > 7) {
+          maskedValue += `-${numbers.slice(7, 11)}`;
+        }
+      }
+    }
+  }
+  
+  return maskedValue;
+};
+
 const ContactForm = () => {
   const dispatch = useDispatch();
   const [contact, setContact] = useState({
@@ -70,7 +92,11 @@ const ContactForm = () => {
         type="tel"
         placeholder="Telefone"
         value={contact.phone}
-        onChange={(e) => setContact({ ...contact, phone: e.target.value })}
+        onChange={(e) => {
+          const maskedValue = applyPhoneMask(e.target.value);
+          setContact({ ...contact, phone: maskedValue });
+        }}
+        maxLength={17} // (xx) x xxxx-xxxx = 17 caracteres
         required
       />
       <Button type="submit">Adicionar Contato</Button>
